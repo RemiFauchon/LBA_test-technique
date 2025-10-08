@@ -16,7 +16,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Products API
 export const fetchProducts = async () => {
   const response = await api.get('/products');
   return response.data;
@@ -46,6 +45,7 @@ export const deleteProduct = async (id) => {
   return response.data;
 };
 
+// Auth
 export const login = async (email, password) => {
   const response = await api.post('/auth/login', { email, password });
   return response.data;

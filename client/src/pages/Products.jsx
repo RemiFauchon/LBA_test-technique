@@ -26,7 +26,7 @@ import { logout } from '../redux/slices/authSlice';
 import ProductList from '../components/ProductList';
 import ProductForm from '../components/ProductForm';
 import DeleteConfirmDialog from '../components/DeleteConfirmDialog';
-import { connectSocket } from '../services/socket';
+import { connectSocket, disconnectSocket } from '../services/socket';
 
 function Products() {
   const dispatch = useDispatch();
@@ -54,10 +54,17 @@ function Products() {
       dispatch(productDeletedBySocket(productId));
     });
 
+    const handleUnload = () => {
+      disconnectSocket();
+    };
+    window.addEventListener('beforeunload', handleUnload);
+
     return () => {
       socket.off('productCreated');
       socket.off('productUpdated');
       socket.off('productDeleted');
+      window.removeEventListener('beforeunload', handleUnload);
+      disconnectSocket();
     };
   }, [dispatch]);
 
@@ -93,6 +100,8 @@ function Products() {
   };
 
   const handleLogout = () => {
+    // disconnect socket before logging out
+    disconnectSocket();
     dispatch(logout());
   };
 

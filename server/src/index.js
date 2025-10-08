@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
-const { connectDB } = require('./config/database');
+const { connectDB, closeDB } = require('./config/database');
 const { seedProducts } = require('./utils/seedData');
 const productsRouter = require('./routes/products');
 const authRouter = require('./routes/auth');
@@ -63,3 +63,34 @@ const startServer = async () => {
 };
 
 startServer();
+
+const shutdown = async (signal) => {
+  try {
+    console.log(`Received ${signal}. Closing server...`);
+
+    server.close();
+
+    // close socket.io
+    try {
+      io.close();
+    } catch (err) {
+      console.error('Error closing Socket.IO', err);
+    }
+
+    // close db connection
+    try {
+      await closeDB();
+    } catch (err) {
+      console.error('Error closing DB', err);
+    }
+
+    console.log('Server closed');
+    process.exit(0);
+  } catch (err) {
+    console.error('Error during shutdown', err);
+    process.exit(1);
+  }
+};
+
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));

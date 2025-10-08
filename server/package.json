@@ -1,7 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "Product management REST API",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",

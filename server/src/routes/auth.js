@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { getDB } = require('../config/database');
+const authMiddleware = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -89,6 +90,16 @@ router.post('/login', async (req, res) => {
       token,
       user: { username: user.username, email: user.email },
     });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get current user
+router.get('/me', authMiddleware, async (req, res) => {
+  try {
+    const { username, email } = req.user;
+    res.json({ user: { username, email } });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

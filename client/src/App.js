@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import Products from './pages/Products';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import { fetchCurrentUser } from './redux/slices/authSlice';
 
 const theme = createTheme({
   palette: {
@@ -24,6 +25,14 @@ function PrivateRoute({ children }) {
 }
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      dispatch(fetchCurrentUser());
+    }
+  }, [dispatch]);
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
